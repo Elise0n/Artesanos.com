@@ -18,6 +18,7 @@ const usuarioRoutes = require('./BackEnd/routes/usuarioRoutes');
 
 require('dotenv').config();
 console.log("DB:", process.env.DB_HOST);
+// Middleware para JSON
 app.use(express.json());
 app.use('/api/usuarios', usuarioRoutes); // Ruta base para usuarios
 
