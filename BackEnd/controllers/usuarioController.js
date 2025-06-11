@@ -1,7 +1,8 @@
-// controllers/usuarioController.js
+// controllers
 const Usuario = require('../models/usuarioModel');
 
 // Obtener todos los usuarios
+// Este controlador llama al modelo y responde con los usuarios desde la base de datos.
 exports.listar = (req, res) => {
   Usuario.obtenerTodos((err, resultados) => {
     if (err) return res.status(500).json({ error: 'Error al obtener usuarios' });
