@@ -2,18 +2,6 @@
 const express = require('express');
 const app = express();
 const pool = require('./BackEnd/config/db');
-
-app.get('/ping-db', (req, res) => {
-  pool.query('SELECT 1 + 1 AS resultado', (err, results) => {
-    if (err) {
-      console.error('Error de conexión a la base de datos:', err);
-      return res.status(500).json({ error: 'Error de conexión a la base de datos' });
-    }
-    res.json({ ok: true, resultado: results[0].resultado });
-  });
-});
-
-
 const usuarioRoutes = require('./BackEnd/routes/usuarioRoutes');
 
 require('dotenv').config();
