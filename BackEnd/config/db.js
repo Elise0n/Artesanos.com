@@ -1,5 +1,6 @@
-// 📦 Conexión a MySQL
+// 📦 Conexión a la base de datos MySQL en Alwaysdata
 const mysql = require('mysql2');
+require('dotenv').config();
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
