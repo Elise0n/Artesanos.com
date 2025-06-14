@@ -1,0 +1,15 @@
+h1 Resultados para "#{q}" en #{filtro}
+
+ul
+  if resultados.length
+    each r in resultados
+      li
+        if filtro == 'usuario'
+          | Usuario: #{r.nombre} #{r.apellido}
+        if filtro == 'album'
+          | Álbum: #{r.titulo}
+        if filtro == 'etiqueta'
+          img(src=r.ruta height="100")
+          p= r.nombre
+  else
+    li No se encontraron resultados.

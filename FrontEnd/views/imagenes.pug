@@ -1,0 +1,58 @@
+include partials/navbar.pug
+
+h1 Imágenes del Álbum
+
+form(action="/imagenes/subir" method="POST" enctype="multipart/form-data")
+  input(type="text" name="titulo" placeholder="Título")
+  input(type="text" name="etiquetas" placeholder="Etiquetas separadas por coma")
+  input(type="hidden" name="album_id" value=albumId)
+  input(type="file" name="imagen" required)
+  label
+    input(type="checkbox" name="solo_amigos")
+    | Compartir solo con amigos
+  button(type="submit") Subir imagen
+
+  h3 Compartir con amigos
+  ul
+    each amigo in amigos
+      li
+        label
+          input(type="checkbox" name="compartidos" value=amigo.id_usuario)
+          | #{amigo.nombre} #{amigo.apellido}
+
+.row.mt-4
+  each img in imagenes
+    .col-md-4.mb-4
+      .card
+        img.card-img-top(src=img.ruta alt=img.titulo height="200")
+        .card-body
+          h5.card-title= img.titulo
+
+          //Etiquetas
+          if img.etiquetas.length
+            .mb-2
+              p.mb-1 Etiquetas:
+              each et in img.etiquetas
+                span(style="background:#49abc3; color:white; padding:3px 6px; margin:2px; border-radius:5px")= et.nombre
+
+          //Likes
+          p.mb-1
+            | Likes: #{img.totalLikes || 0} 
+            a(href=`/imagenes/${img.id_imagen}/likes` class="btn btn-sm btn-outline-info ms-2") Ver quiénes
+
+          //Comentario y Me gusta
+          form(action="/imagenes/comentar/like" method="POST")
+            input(type="hidden" name="imagen_id" value=img.id_imagen)
+            textarea(name="contenido" placeholder="Escribe un comentario")
+            button.btn.btn-sm.btn-outline-success(type="submit") Comentar
+            button.btn.btn-sm.btn-outline-danger(type="submit") Me gusta ❤️
+
+          //Comentarios existentes
+          if img.comentarios && img.comentarios.length
+            h6.mt-3 Comentarios:
+            ul.list-group
+              each c in img.comentarios
+                li.list-group-item
+                  strong #{c.nombre}: 
+                  | #{c.contenido}
+

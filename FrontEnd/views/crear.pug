@@ -1,0 +1,39 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    title Registrar Usuario
+    link(rel="stylesheet", href="/css/estilos.css")
+  body
+    include partials/navbar.pug
+
+    h1 Registrar nuevo usuario
+
+
+    form(action="/registrar" method="POST")
+      div
+        label(for="nombre") Nombre:
+        input(type="text" name="nombre" required)
+
+      div
+        label(for="apellido") Apellido:
+        input(type="text" name="apellido" required)
+
+      div
+        label(for="email") Email:
+        input(type="email" name="email" required)
+
+      div
+        label(for="contraseña") Contraseña:
+        input(type="password" name="contraseña" required)
+
+      div
+        label(for="intereses") Intereses:
+        input(type="text" name="intereses")
+
+      div
+        label(for="antecedentes") Antecedentes:
+        textarea(name="antecedentes")
+
+      div
+        button(type="submit") Registrar

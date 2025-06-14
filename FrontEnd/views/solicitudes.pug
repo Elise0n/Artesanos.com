@@ -1,0 +1,11 @@
+h1 Solicitudes de Amistad Recibidas
+
+ul
+  each s in solicitudes
+    li
+      | #{s.remitente_nombre} te envió una solicitud
+
+      form(action="/amistades/responder" method="POST")
+        input(type="hidden" name="solicitud_id" value=s.id)
+        button(type="submit" name="accion" value="aceptada") Aceptar
+        button(type="submit" name="accion" value="rechazada") Rechazar

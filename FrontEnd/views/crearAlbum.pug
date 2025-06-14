@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h1 Crear nuevo álbum
+
+  form(action="/albumes/crear" method="POST")
+    label(for="titulo") Título del álbum:
+    input#titulo(type="text" name="titulo" required)
+    button.btn.btn-primary(type="submit") Crear

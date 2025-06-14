@@ -1,9 +1,9 @@
-// routes
+//routes
 const express = require('express');
 const router = express.Router();
 const usuarioController = require('../controllers/usuarioController');
 
-// Rutas para usuarios
+//Rutas para usuarios
 router.get('/', usuarioController.listar);// Ruta GET /api/usuarios → Lista todos los usuarios
 router.get('/:id', usuarioController.obtener);// Ruta GET /api/usuarios/:id → Obtiene un usuario por ID
 router.post('/', usuarioController.crear);// Ruta POST /api/usuarios → Crea un nuevo usuario

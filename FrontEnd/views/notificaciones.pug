@@ -1,0 +1,8 @@
+h1 Notificaciones
+
+form(action="/notificaciones/marcar-vistas" method="POST")
+  button(type="submit") Marcar todas como vistas
+
+ul
+  each n in notificaciones
+    li #{n.mensaje} - #{n.fecha.toLocaleString()}

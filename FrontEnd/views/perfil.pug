@@ -1,0 +1,39 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    title Perfil del Usuario
+    link(rel="stylesheet", href="/css/estilos.css")
+  body
+    include partials/navbar.pug 
+
+    h1 Perfil de #{usuario.nombre}
+
+    p Email: #{usuario.email}
+    p Intereses: #{usuario.intereses || 'No especificado'}
+    p Antecedentes: #{usuario.antecedentes || 'No especificado'}
+
+    // 🔗 Link a solicitudes de amistad
+    a.btn.btn-primary(href="/amistades/pendientes") Ver solicitudes de amistad
+    // 🖼️ Álbumes del usuario
+    h2 Mis álbumes
+    if albumes.length
+      ul
+        each a in albumes
+          li
+            a(href=`/albumes/${a.id}`) #{a.titulo}
+    else
+      p Todavía no creaste álbumes.
+    
+    //Crear nuevo álbum
+    a.btn.btn-success.mt-3(href="/albumes/crear") Crear nuevo álbum
+    
+    br
+    a(href="/") ← Volver al inicio
+
+    form(action="/cerrar-sesion" method="POST")
+      button(type="submit") Cerrar sesión
+
+
+
+

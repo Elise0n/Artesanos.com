@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  h1 Subir nueva imagen
+
+  form(method="POST" action="/imagenes/subir" enctype="multipart/form-data")
+    input(type="hidden" name="album_id" value=albumId)
+
+    .mb-3
+      label(for="titulo") Título:
+      input.form-control(type="text" name="titulo" required)
+
+    .mb-3
+      label(for="imagen") Seleccionar imagen:
+      input.form-control(type="file" name="imagen" accept="image/*" required)
+
+    .form-check.mb-3
+      input.form-check-input(type="checkbox" name="solo_amigos" id="solo_amigos")
+      label.form-check-label(for="solo_amigos") Compartir solo con amigos
+
+    if amigos && amigos.length
+      h3.mb-2 Compartir con amigos específicos
+      each amigo in amigos
+        .form-check
+          input.form-check-input(type="checkbox" name="compartidos" value=amigo.id_usuario id='amigo-' + amigo.id_usuario)
+          label.form-check-label(for='amigo-' + amigo.id_usuario) #{amigo.nombre} #{amigo.apellido}
+
+    button.btn.btn-primary.mt-3(type="submit") Subir imagen

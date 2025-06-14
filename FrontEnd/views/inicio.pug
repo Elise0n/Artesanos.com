@@ -1,0 +1,22 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    title Artesanos.com - Comunidad Creativa
+    link(rel="stylesheet", href="/css/estilos.css")
+  body
+    include partials/navbar.pug
+
+    main
+      h1.text-center Bienvenido a Artesanos.com
+
+      if usuario
+        h2.text-center ¡Hola, #{usuario.nombre}!
+        p.text-center Comparte tus obras, explora álbumes y conecta con otros artesanos.
+        a(href="/perfil").btn Ir a mi perfil
+      else
+        h2.text-center Un espacio para artistas y artesanos
+        p.text-center Registrate gratis y compartí tus creaciones con el mundo.
+        div.text-center
+          a(href="/registrar").btn Registrarme
+          a(href="/iniciar-sesion").btn Iniciar sesión

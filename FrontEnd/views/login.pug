@@ -1,0 +1,22 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    title Iniciar sesión
+    link(rel="stylesheet", href="/css/estilos.css")
+  body
+    include partials/navbar.pug
+
+    h1 Iniciar sesión
+
+    form(action="/iniciar-sesion" method="POST")
+      div
+        label(for="email") Email:
+        input(type="email" name="email" required)
+
+      div
+        label(for="contraseña") Contraseña:
+        input(type="password" name="contraseña" required)
+
+      div
+        button(type="submit") Ingresar

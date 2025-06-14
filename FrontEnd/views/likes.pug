@@ -1,0 +1,7 @@
+include partials/navbar.pug
+
+h2 Usuarios que dieron like
+
+ul
+  each u in usuarios
+    li #{u.nombre} #{u.apellido}
