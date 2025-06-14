@@ -70,8 +70,20 @@ app.get('/iniciar-sesion', (req, res) => {
 // Vista de perfil
 app.get('/perfil', (req, res) => {
   if (!req.session.usuario) return res.redirect('/iniciar-sesion');
-  res.render('perfil', { usuario: req.session.usuario });
+
+  const sql = 'SELECT * FROM album WHERE usuario_id = ?';
+  pool.query(sql, [req.session.usuario.id], (err, albumes) => {
+    if (err) {
+      console.error('❌ Error al obtener álbumes:', err);
+      return res.status(500).send('Error al cargar perfil');
+    }
+    res.render('perfil', {
+      usuario: req.session.usuario,
+      albumes
+    });
+  });
 });
+
 
 // ==========================
 // 🧠 Autenticación y Registro
