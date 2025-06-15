@@ -1,11 +1,8 @@
-include partials/navbar.pug
 
-h1 Álbumes de #{usuario.nombre}
+extends ./partials/layout.pug
 
-form(action="/albumes/crear" method="POST")
-  input(type="text" name="titulo" placeholder="Título del álbum" required)
-  button(type="submit") Crear álbum
-
-ul
-  each album in albumes
-    li= album.titulo
+block content
+  .container
+    h1 Albumes
+    .card
+      p Aquí se mostrará la vista de albumes.

@@ -1,17 +1,8 @@
-extends layout
+
+extends ./partials/layout.pug
 
 block content
-  h1 Solicitudes de Amistad
-
-  if solicitudes.length
-    ul.list-group
-      each s in solicitudes
-        li.list-group-item.d-flex.justify-content-between.align-items-center
-          span #{s.nombre} #{s.apellido}
-
-          form(action="/amistades/responder" method="POST" class="d-flex gap-2")
-            input(type="hidden" name="solicitud_id" value=s.id_solicitud)
-            button.btn.btn-sm.btn-success(name="accion" value="aceptada") Aceptar
-            button.btn.btn-sm.btn-danger(name="accion" value="rechazada") Rechazar
-  else
-    p No tenés solicitudes pendientes.
+  .container
+    h1 Solicitudes
+    .card
+      p Aquí se mostrará la vista de solicitudes.
