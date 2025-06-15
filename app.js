@@ -178,10 +178,11 @@ app.get('/ping-db', (req, res) => {
 // ==========================
 console.log("DB:", process.env.DB_HOST);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+const PORT = process.env.PORT || 8100;
+app.listen(PORT, '::', () => {
+  console.log(`Servidor corriendo en puerto ${PORT}`);
 });
+
 
 
 // Configuración de multer
