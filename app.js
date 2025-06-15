@@ -74,7 +74,7 @@ app.get('/perfil', (req, res) => {
   const sql = 'SELECT * FROM album WHERE usuario_id = ?';
   pool.query(sql, [req.session.usuario.id], (err, albumes) => {
     if (err) {
-      console.error('❌ Error al obtener álbumes:', err);
+      console.error('Error al obtener álbumes:', err);
       return res.status(500).send('Error al cargar perfil');
     }
     res.render('perfil', {
@@ -132,7 +132,7 @@ app.post('/registrar', async (req, res) => {
 
   pool.query('SELECT * FROM usuario WHERE email = ?', [datos.email], async (err, resultados) => {
     if (err) {
-      console.error('❌ Error al verificar email:', err);
+      console.error('Error al verificar email:', err);
       return res.status(500).send('Error al verificar usuario');
     }
 
@@ -146,13 +146,13 @@ app.post('/registrar', async (req, res) => {
 
       Usuario.crear(datos, (err, resultado) => {
         if (err) {
-          console.error('❌ Error al registrar usuario:', err);
+          console.error('Error al registrar usuario:', err);
           return res.status(500).send('Error al registrar usuario');
         }
         res.redirect('/');
       });
     } catch (error) {
-      console.error('❌ Error al hashear contraseña:', error);
+      console.error('Error al hashear contraseña:', error);
       res.status(500).send('Error al registrar usuario');
     }
   });
@@ -178,7 +178,7 @@ app.get('/ping-db', (req, res) => {
 // ==========================
 console.log("DB:", process.env.DB_HOST);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8100;
 app.listen(PORT, '::', () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
 });
