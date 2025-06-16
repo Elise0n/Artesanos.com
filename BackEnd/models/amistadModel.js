@@ -16,7 +16,7 @@ const Amistad = {
   // Rechazar solicitud
   rechazar: (de, para, callback) => {
     const sql = 'UPDATE solicitud_amistad SET estado = "rechazada" WHERE de_usuario = ? AND para_usuario = ?';
-    query(sql, [de, para], callback);
+    pool.query(sql, [de, para], callback);
   },
 
   // Ver solicitudes recibidas
