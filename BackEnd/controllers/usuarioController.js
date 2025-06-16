@@ -1,4 +1,6 @@
-// controllers
+// ============================
+// Controladores de usuarios
+// ============================
 const Usuario = require('../models/usuarioModel');
 
 // Obtener todos los usuarios
