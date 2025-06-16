@@ -67,12 +67,12 @@ app.get('/usuarios', (req, res) => {
 
 // Formulario de registro
 app.get('/registrar', (req, res) => {
-  res.render('crear');
+  res.render('registro', { error: null, exito: null });
 });
 
 // Formulario de login
-app.get('/iniciar-sesion', (req, res) => {
-  res.render('login');
+app.get('/login', (req, res) => {
+  res.render('login', { error: null, exito: null });
 });
 
 // Vista de perfil
