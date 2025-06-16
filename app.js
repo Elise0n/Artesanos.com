@@ -211,11 +211,11 @@ app.get('/buscar', (req, res) => {
 
   switch (filtro) {
     case 'usuario':
-      sql = 'SELECT id, nombre, apellido FROM usuario WHERE nombre LIKE ? OR apellido LIKE ?';
+      sql = 'SELECT id_usuario, nombre, apellido FROM usuario WHERE nombre LIKE ? OR apellido LIKE ?';
       params = [ `%${q}%`, `%${q}%` ];
       break;
     case 'album':
-      sql = 'SELECT id, titulo FROM album WHERE titulo LIKE ?';
+      sql = 'SELECT id_usuario, titulo FROM album WHERE titulo LIKE ?';
       break;
     case 'etiqueta':
       sql = `
