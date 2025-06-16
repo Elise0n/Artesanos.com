@@ -57,6 +57,14 @@ app.get('/', (req, res) => {
   res.render('inicio');
 });
 
+// Lista de usuarios (vista)
+app.get('/usuarios', (req, res) => {
+  Usuario.obtenerTodos((err, usuarios) => {
+    if (err) return res.status(500).send('Error al obtener usuarios');
+    res.render('usuarios', { usuarios });
+  });
+});
+
 // Formulario de registro
 app.get('/registrar', (req, res) => {
   res.render('crear');
@@ -84,36 +92,36 @@ app.get('/perfil', (req, res) => {
   });
 });
 
-
 // ==========================
 // 🧠 Autenticación y Registro
 // ==========================
 
 // Procesar login
-app.post('/iniciar-sesion', async (req, res) => {
+app.post('/login', async (req, res) => {
   const { email, contraseña } = req.body;
 
   pool.query('SELECT * FROM usuario WHERE email = ?', [email], async (err, resultados) => {
     if (err) {
       console.error('Error al buscar usuario:', err);
-      return res.status(500).send('Error interno');
+      return res.render('login', { error: 'Error en el servidor', exito: null });
     }
 
     if (resultados.length === 0) {
-      return res.status(401).send('Credenciales incorrectas');
+      return res.render('login', { error: 'Correo o contraseña incorrectos', exito: null });
     }
 
     const usuario = resultados[0];
-    const passwordValida = await bcrypt.compare(contraseña, usuario.contraseña);
+    const esValido = await bcrypt.compare(contraseña, usuario.contraseña);
 
-    if (!passwordValida) {
-      return res.status(401).send('Credenciales incorrectas');
+    if (!esValido) {
+      return res.render('login', { error: 'Correo o contraseña incorrectos', exito: null });
     }
 
     // Guardamos en sesión
     req.session.usuario = {
-      id: usuario.id,
+      id: usuario.id_usuario,
       nombre: usuario.nombre,
+      apellido: usuario.apellido,
       email: usuario.email
     };
 
@@ -121,7 +129,16 @@ app.post('/iniciar-sesion', async (req, res) => {
   });
 });
 
+// Vista de perfil del usuario logueado
+app.get('/perfil', (req, res) => {
+  if (!req.session.usuario) return res.redirect('/login');
+  res.render('perfil', { usuario: req.session.usuario });
+});
+
 // Cerrar sesión
+app.get('/logout', (req, res) => {
+  req.session.destroy(() => res.redirect('/'));
+});
 app.post('/cerrar-sesion', (req, res) => {
   req.session.destroy(() => res.redirect('/'));
 });
@@ -133,11 +150,11 @@ app.post('/registrar', async (req, res) => {
   pool.query('SELECT * FROM usuario WHERE email = ?', [datos.email], async (err, resultados) => {
     if (err) {
       console.error('Error al verificar email:', err);
-      return res.status(500).send('Error al verificar usuario');
+      return res.render('registro', { error: 'Error al verificar usuario', exito: null });
     }
 
     if (resultados.length > 0) {
-      return res.status(400).send('El correo ya está registrado');
+      return res.render('registro', { error: 'El correo ya está registrado', exito: null });
     }
 
     try {
@@ -147,13 +164,12 @@ app.post('/registrar', async (req, res) => {
       Usuario.crear(datos, (err, resultado) => {
         if (err) {
           console.error('Error al registrar usuario:', err);
-          return res.status(500).send('Error al registrar usuario');
+          return res.render('registro', { error: 'Error al registrar usuario', exito: null });
         }
-        res.redirect('/');
+        res.render('login', { error: null, exito: '¡Registro exitoso! Ahora puedes iniciar sesión.' });
       });
-    } catch (error) {
-      console.error('Error al hashear contraseña:', error);
-      res.status(500).send('Error al registrar usuario');
+    } catch (err) {
+      res.render('registro', { error: 'Error al registrar usuario', exito: null });
     }
   });
 });

@@ -5,10 +5,22 @@ block content
   .container
     h1 Mi Perfil
 
-    .card
-      h2 Datos personales
-      p Nombre: #{usuario.nombre}
-      p Email: #{usuario.email}
-      p Edad: #{usuario.edad}
-
-    a.btn(href="/editar-perfil") Editar perfil
+    .card.shadow-sm.p-4.mb-4
+      h2.mb-3 Datos personales
+      if usuario.imagen_perfil
+        img.rounded-circle.mb-3(src=usuario.imagen_perfil, alt="Foto de perfil", style="width:120px;height:120px;object-fit:cover;")
+      p.mb-1
+        strong Nombre: 
+        | #{usuario.nombre} #{usuario.apellido}
+      p.mb-1
+        strong Email: 
+        | #{usuario.email}
+      if usuario.intereses
+        p.mb-1
+          strong Intereses: 
+          | #{usuario.intereses}
+      if usuario.antecedentes
+        p.mb-1
+          strong Antecedentes: 
+          | #{usuario.antecedentes}
+    a.btn.btn-outline-primary.mt-3(href="/editar-perfil") Editar perfil

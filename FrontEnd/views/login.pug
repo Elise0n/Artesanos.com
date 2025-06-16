@@ -3,14 +3,16 @@ extends ./partials/layout.pug
 
 block content
   .container
-    h1 Iniciar Sesión
-
-    form(method="POST", action="/login")
-      .card
-        label(for="email") Correo electrónico
-        input(type="email", name="email", required).form-control
-
-        label(for="password") Contraseña
-        input(type="password", name="password", required).form-control
-
-        button.btn(type="submit") Entrar
+    h1.mb-4 Iniciar Sesión
+    if error
+      .alert.alert-danger= error
+    if exito
+      .alert.alert-success= exito
+    form(method="POST", action="/login", class="card p-4 shadow-sm mx-auto", style="max-width:400px;")
+      .mb-3
+        label.form-label(for="email") Correo electrónico
+        input.form-control(type="email", name="email", required)
+      .mb-3
+        label.form-label(for="contraseña") Contraseña
+        input.form-control(type="password", name="contraseña", required)
+      button.btn.btn-primary(type="submit") Entrar

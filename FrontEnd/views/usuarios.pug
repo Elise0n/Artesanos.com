@@ -1,8 +1,21 @@
-
 extends ./partials/layout.pug
 
 block content
   .container
-    h1 Usuarios
-    .card
-      p Aquí se mostrará la vista de usuarios.
+    h1.mb-4 Usuarios registrados
+    if usuarios && usuarios.length > 0
+      .row.row-cols-1.row-cols-md-2.row-cols-lg-3.g-4
+        each usuario in usuarios
+          .col
+            .card.shadow-sm.h-100
+              if usuario.imagen_perfil
+                img.card-img-top.rounded-circle.mx-auto.mt-3(style="width:100px; height:100px; object-fit:cover;", src=usuario.imagen_perfil, alt=usuario.nombre)
+              .card-body.text-center
+                h5.card-title #{usuario.nombre} #{usuario.apellido}
+                p.card-text.text-muted #{usuario.email}
+                if usuario.intereses
+                  p.small.mb-0 Intereses: #{usuario.intereses}
+                if usuario.antecedentes
+                  p.small.text-secondary.mb-0 Antecedentes: #{usuario.antecedentes}
+    else
+      .alert.alert-info.mt-4 No hay usuarios registrados aún.
