@@ -1,20 +1,20 @@
-
 extends ./partials/layout.pug
 
 block content
-  .container
-    h1 Bienvenido a Artesanos.com
-    p Conectamos a la comunidad con las actividades que más disfruta.
+  h1.mb-4 Bienvenido a Artesanos.com
+  p.text-muted Conectamos a la comunidad con las actividades que más disfruta.
 
-    .card
-      h2 Actividades destacadas
+  .card.mb-4
+    .card-body
+      h2.card-title Actividades destacadas
       ul
         li Yoga para adultos mayores
         li Taller de Memoria
         li Clases de Folklore
 
-    .card
-      h2 Noticias recientes
+  .card.mb-4
+    .card-body
+      h2.card-title Noticias recientes
       p Mantente informado sobre los próximos eventos y novedades.
 
-    a.btn(href="/usuarios") Ver usuarios
+  a.btn.btn-info(href="/usuarios") Ver usuarios

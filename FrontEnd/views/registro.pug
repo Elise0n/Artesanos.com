@@ -1,32 +1,19 @@
 extends ./partials/layout.pug
 
 block content
-  .container
-    h1.mb-4 Registro de Usuario
-    if error
-      .alert.alert-danger= error
-    if exito
-      .alert.alert-success= exito
-    form(method="POST", action="/registrar", enctype="multipart/form-data", class="card p-4 shadow-sm mx-auto", style="max-width:500px;")
-      .mb-3
-        label.form-label(for="nombre") Nombre
-        input.form-control(type="text", name="nombre", required)
-      .mb-3
-        label.form-label(for="apellido") Apellido
-        input.form-control(type="text", name="apellido", required)
-      .mb-3
-        label.form-label(for="email") Email
-        input.form-control(type="email", name="email", required)
-      .mb-3
-        label.form-label(for="contraseña") Contraseña
-        input.form-control(type="password", name="contraseña", required minlength="6")
-      .mb-3
-        label.form-label(for="intereses") Intereses (opcional)
-        input.form-control(type="text", name="intereses")
-      .mb-3
-        label.form-label(for="antecedentes") Antecedentes (opcional)
-        input.form-control(type="text", name="antecedentes")
-      .mb-3
-        label.form-label(for="imagen_perfil") Imagen de perfil (opcional)
-        input.form-control(type="file", name="imagen_perfil", accept="image/*")
-      button.btn.btn-primary(type="submit") Registrarse
+  h1.mb-4 Registro de Usuario
+
+  form(method="POST", action="/registro", class="card p-4 shadow-sm mx-auto", style="max-width:500px;")
+    .mb-3
+      label.form-label(for="nombre") Nombre
+      input.form-control(type="text", name="nombre", required)
+
+    .mb-3
+      label.form-label(for="email") Email
+      input.form-control(type="email", name="email", required)
+
+    .mb-3
+      label.form-label(for="contraseña") Contraseña
+      input.form-control(type="password", name="contraseña", required minlength="6")
+
+    button.btn.btn-primary(type="submit") Registrarse
