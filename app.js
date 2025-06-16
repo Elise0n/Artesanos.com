@@ -65,7 +65,7 @@ app.get('/usuarios', (req, res) => {
 });
 
 // Formulario de registro
-app.get('/registrar', (req, res) => {
+app.get('/registro', (req, res) => {
   res.render('registro', { error: null, exito: null });
 });
 
@@ -143,7 +143,7 @@ app.post('/cerrar-sesion', (req, res) => {
 });
 
 // Registrar nuevo usuario
-app.post('/registrar', async (req, res) => {
+app.post('/registro', async (req, res) => {
   const datos = req.body;
 
   pool.query('SELECT * FROM usuario WHERE email = ?', [datos.email], async (err, resultados) => {
