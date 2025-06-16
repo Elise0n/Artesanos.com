@@ -74,7 +74,7 @@ app.get('/login', (req, res) => {
   res.render('login', { error: null, exito: null });
 });
 
-// Vista de perfil
+// Vista de perfil logeado
 app.get('/perfil', (req, res) => {
   if (!req.session.usuario) return res.redirect('/login');
 
@@ -126,12 +126,6 @@ app.post('/login', async (req, res) => {
 
     res.redirect('/perfil');
   });
-});
-
-// Vista de perfil del usuario logueado
-app.get('/perfil', (req, res) => {
-  if (!req.session.usuario) return res.redirect('/login');
-  res.render('perfil', { usuario: req.session.usuario });
 });
 
 // Cerrar sesión
