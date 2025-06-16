@@ -19,8 +19,8 @@ const comentarioLikeRoutes = require('./BackEnd/routes/comentarioLikeRoutes');
 // ==========================
 // ⚙️ Configuraciones generales
 // ==========================
-app.set('views', './FrontEnd/views');           // Ruta de vistas Pug
-app.set('view engine', 'pug');                  // Motor de plantillas
+app.set('view engine', 'pug'); // Motor de plantillas
+app.set('views', './FrontEnd/views'); // Ruta de vistas Pug
 
 app.use(express.urlencoded({ extended: true })); // Formularios HTML
 app.use(express.json());                         // JSON en requests
@@ -37,9 +37,10 @@ app.use('/amistades', amistadRoutes);
 // 🛡️ Configuración de sesiones
 // ==========================
 app.use(session({
-  secret: 'clave-secreta-artesanos', // 🔐 Cambiar en producción
+  secret: 'secreto_seguro', //Cambiar en producción
   resave: false,
   saveUninitialized: false
+  cookie: { secure: false, maxAge: 3600000 } // Añadir opciones adicionales
 }));
 
 // Middleware para usar datos del usuario en todas las vistas
@@ -166,7 +167,7 @@ app.use('/api/usuario', usuarioRoutes); // Rutas CRUD API REST
 app.get('/ping-db', (req, res) => {
   pool.query('SELECT 1 + 1 AS resultado', (err, results) => {
     if (err) {
-      console.error('❌ Error de conexión a la base de datos:', err);
+      console.error('Error de conexión a la base de datos:', err);
       return res.status(500).json({ error: 'Error de conexión a la base de datos' });
     }
     res.json({ ok: true, resultado: results[0].resultado });
