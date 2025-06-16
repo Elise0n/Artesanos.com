@@ -40,7 +40,6 @@ app.use(session({
   secret: 'secreto_seguro', //Cambiar en producción
   resave: false,
   saveUninitialized: false
-  cookie: { secure: false, maxAge: 3600000 } // Añadir opciones adicionales
 }));
 
 // Middleware para usar datos del usuario en todas las vistas
