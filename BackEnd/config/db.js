@@ -1,9 +1,8 @@
-import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
-dotenv.config();
+  // 📦 Conexión a la base de datos MySQL en Alwaysdata
+const mysql = require('mysql2');
+require('dotenv').config();
 
-// 📦 Conexión a la base de datos MySQL en Alwaysdata
-export const pool = mysql.createPool({
+const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -12,3 +11,5 @@ export const pool = mysql.createPool({
   connectionLimit: 10,
   queueLimit: 0
 });
+
+module.exports = pool;
