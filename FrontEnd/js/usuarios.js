@@ -1,5 +1,3 @@
-// public/js/usuarios.js
-
 // Enviar datos del formulario de registro
 document.querySelector('#formRegistro')?.addEventListener('submit', async (e) => {
     e.preventDefault();

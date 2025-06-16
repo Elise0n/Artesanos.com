@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const db = require('./BackEnd/config/db');
 
 const Etiqueta = {
   //Crear etiqueta si no existe

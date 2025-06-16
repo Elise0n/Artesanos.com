@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const db = require('./BackEnd/config/db');
 
 //Modelo con funciones CRUD para usuarios
 const Usuario = {

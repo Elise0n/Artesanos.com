@@ -1,7 +1,7 @@
 // ============================
 // Controladores de usuarios
 // ============================
-const Usuario = require('../models/usuarioModel');
+const Usuario = require('./BackEnd/models/usuarioModel');
 
 // Obtener todos los usuarios
 // Este controlador llama al modelo y responde con los usuarios desde la base de datos.

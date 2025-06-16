@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../config/db');
+const pool = require('./BackEnd/config/db');
 
 //Guardar comentario o like
 router.post('/comentar/like', (req, res) => {

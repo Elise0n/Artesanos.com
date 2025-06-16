@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Album = require('../models/albumModel');
+const Album = require('./BackEnd/models/albumModel');
 
 // ============================
 // Mostrar álbumes del usuario logueado

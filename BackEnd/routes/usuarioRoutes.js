@@ -1,7 +1,7 @@
 //routes
 const express = require('express');
 const router = express.Router();
-const usuarioController = require('../controllers/usuarioController');
+const usuarioController = require('./BackEnd/controllers/usuarioController');
 
 //Rutas para usuarios
 router.get('/', usuarioController.listar);// Ruta GET /api/usuarios → Lista todos los usuarios

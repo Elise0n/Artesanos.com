@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../config/db');
-const Imagen = require('../models/imagenModel');
-const Etiqueta = require('../models/etiquetaModel');
+const pool = require('./BackEnd/config/db');
+const Imagen = require('./BackEnd/models/imagenModel');
+const Etiqueta = require('./BackEnd/models/etiquetaModel');
 const multer = require('multer');
 const path = require('path');
 

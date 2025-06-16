@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const db = require('./BackEnd/config/db');
 
 const Imagen = {
   //Insertar imagen

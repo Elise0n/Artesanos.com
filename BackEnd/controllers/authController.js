@@ -1,7 +1,7 @@
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const pool = require('../config/db');
+const pool = require('./BackEnd/config/db');
 
 // Mostrar login
 exports.vistaLogin = (req, res) => {

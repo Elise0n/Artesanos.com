@@ -1,7 +1,7 @@
 
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/authController');
+const authController = require('./BackEnd/controllers/authController');
 
 // Rutas de autenticación
 router.get('/login', authController.vistaLogin);
