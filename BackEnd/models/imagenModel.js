@@ -1,10 +1,10 @@
-const db = require('./BackEnd/config/db');
+const pool = require('../config/db');
 
 const Imagen = {
   //Insertar imagen
   crear: (data, callback) => {
     const sql = 'INSERT INTO imagen (titulo, ruta, album_id, solo_amigos) VALUES (?, ?, ?, ?)';
-    db.query(sql, [data.titulo, data.ruta, data.album_id, data.solo_amigos], callback);
+    pool.query(sql, [data.titulo, data.ruta, data.album_id, data.solo_amigos], callback);
   },
 
   //Obtener imágenes visibles según si son públicas o compartidas con el usuario
@@ -17,8 +17,8 @@ const Imagen = {
       WHERE i.album_id = ?
         AND (i.solo_amigos = 0 OR c.usuario_id IS NOT NULL)
     `;
-    db.query(sql, [usuarioId, albumId], callback);
+    pool.query(sql, [usuarioId, albumId], callback);
   }
-};
+};  
 
 module.exports = Imagen;

@@ -1,15 +1,15 @@
-const db = require('../config/db');
+const pool = require('../config/db');
 
 //Modelo con funciones CRUD para usuarios
 const Usuario = {
   obtenerTodos(callback) {
     const sql = 'SELECT * FROM usuario';  
-    db.query(sql, callback);
+    pool.query(sql, callback);
   },
 
   obtenerPorId(id, callback) {
     const sql = 'SELECT * FROM usuario WHERE id_usuario = ?';
-    db.query(sql, [id], callback);
+    pool.query(sql, [id], callback);
   },
 
   crear(data, callback) {
@@ -26,7 +26,7 @@ const Usuario = {
       data.antecedentes || null,
       data.imagen_perfil || null
     ];
-    db.query(sql, valores, callback);
+    pool.query(sql, valores, callback);
   },
 
   actualizar(id, data, callback) {
@@ -44,12 +44,12 @@ const Usuario = {
       data.imagen_perfil,
       id
     ];
-    db.query(sql, valores, callback);
+    pool.query(sql, valores, callback);
   },
 
   eliminar(id, callback) {
     const sql = 'DELETE FROM usuario WHERE id_usuario = ?';
-    db.query(sql, [id], callback);
+    pool.query(sql, [id], callback);
   }
 };
 

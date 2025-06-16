@@ -15,7 +15,6 @@ const notificacionRoutes = require('./BackEnd/routes/notificacionRoutes');
 require('dotenv').config();
 const amistadRoutes = require('./BackEnd/routes/amistadRoutes');
 const comentarioLikeRoutes = require('./BackEnd/routes/comentarioLikeRoutes');
-
 // ==========================
 // ⚙️ Configuraciones generales
 // ==========================
@@ -28,7 +27,7 @@ app.use('/css', express.static(__dirname + '/FrontEnd/css'));
 app.use('/js', express.static(__dirname + '/FrontEnd/js'));
 app.use('/albumes', albumRoutes);
 app.use('/imagenes', imagenRoutes);
-app.use('/imagenes', comentarioLikeRoutes); // Comentarios y likes
+app.use('/comentarios', comentarioLikeRoutes); // Comentarios y likes
 app.use('/uploads', express.static(__dirname + '/FrontEnd/uploads'));
 app.use('/notificaciones', notificacionRoutes);
 app.use('/amistades', amistadRoutes);

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Amistad = require('../models/amistadModel');
-const Notificacion = require('../models/notificacionModel');
+const Amistad = require('../models/amistadModel').default;
+const Notificacion = require('../models/notificacionModel').default;
 
 //Enviar solicitud de amistad
 router.post('/enviar', (req, res) => {

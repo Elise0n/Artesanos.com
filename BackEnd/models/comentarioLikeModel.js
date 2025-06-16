@@ -1,10 +1,10 @@
-const db = require('./BackEnd/config/db');
+const pool = require('../config/db');
 
 const Comentario = {
-  // Crear nuevo comentario
+ // Crear nuevo comentario
   crear: (data, callback) => {
     const sql = 'INSERT INTO comentario (contenido, usuario_id, imagen_id) VALUES (?, ?, ?)';
-    db.query(sql, [data.contenido, data.usuario_id, data.imagen_id], callback);
+    pool.query(sql, [data.contenido, data.usuario_id, data.imagen_id], callback);
   },
 
   // Obtener comentarios por imagen
@@ -16,7 +16,7 @@ const Comentario = {
       WHERE imagen_id = ?
       ORDER BY fecha DESC
     `;
-    db.query(sql, [imagenId], callback);
+    pool.query(sql, [imagenId], callback);
   }
 };
 
