@@ -78,7 +78,7 @@ app.get('/login', (req, res) => {
 app.get('/perfil', (req, res) => {
   if (!req.session.usuario) return res.redirect('/login');
 
-  const sql = 'SELECT * FROM album WHERE usuario_id = ?';
+  const sql = 'SELECT * FROM album WHERE id_usuario = ?';
   pool.query(sql, [req.session.usuario.id], (err, albumes) => {
     if (err) {
       console.error('Error al obtener álbumes:', err);
