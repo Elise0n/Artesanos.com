@@ -1,8 +1,8 @@
-h1 Notificaciones
 
-form(action="/notificaciones/marcar-vistas" method="POST")
-  button(type="submit") Marcar todas como vistas
+extends ./partials/layout.pug
 
-ul
-  each n in notificaciones
-    li #{n.mensaje} - #{n.fecha.toLocaleString()}
+block content
+  .container
+    h1 Notificaciones
+    .card
+      p Aquí se mostrará la vista de notificaciones.

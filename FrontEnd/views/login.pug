@@ -1,22 +1,16 @@
-doctype html
-html(lang="es")
-  head
-    meta(charset="UTF-8")
-    title Iniciar sesión
-    link(rel="stylesheet", href="/css/estilos.css")
-  body
-    include partials/navbar.pug
 
-    h1 Iniciar sesión
+extends ./partials/layout.pug
 
-    form(action="/iniciar-sesion" method="POST")
-      div
-        label(for="email") Email:
-        input(type="email" name="email" required)
+block content
+  .container
+    h1 Iniciar Sesión
 
-      div
-        label(for="contraseña") Contraseña:
-        input(type="password" name="contraseña" required)
+    form(method="POST", action="/login")
+      .card
+        label(for="email") Correo electrónico
+        input(type="email", name="email", required).form-control
 
-      div
-        button(type="submit") Ingresar
+        label(for="password") Contraseña
+        input(type="password", name="password", required).form-control
+
+        button.btn(type="submit") Entrar

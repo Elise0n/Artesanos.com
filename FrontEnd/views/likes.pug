@@ -1,7 +1,8 @@
-include partials/navbar.pug
 
-h2 Usuarios que dieron like
+extends ./partials/layout.pug
 
-ul
-  each u in usuarios
-    li #{u.nombre} #{u.apellido}
+block content
+  .container
+    h1 Likes
+    .card
+      p Aquí se mostrará la vista de likes.

@@ -1,9 +1,8 @@
-extends layout
+
+extends ./partials/layout.pug
 
 block content
-  h1 Crear nuevo álbum
-
-  form(action="/albumes/crear" method="POST")
-    label(for="titulo") Título del álbum:
-    input#titulo(type="text" name="titulo" required)
-    button.btn.btn-primary(type="submit") Crear
+  .container
+    h1 Crearalbum
+    .card
+      p Aquí se mostrará la vista de crearalbum.
