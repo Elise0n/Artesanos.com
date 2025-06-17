@@ -191,8 +191,10 @@ app.post('/login', async (req, res) => {
       id: usuario.id_usuario,
       nombre: usuario.nombre,
       apellido: usuario.apellido,
-      email: usuario.email
+      email: usuario.email,
+      imagen_perfil: usuario.imagen_perfil || null
     };
+    console.log('✅ Usuario logueado:', req.session.usuario);
     res.redirect('/perfil');
   });
 });
