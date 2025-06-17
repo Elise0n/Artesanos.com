@@ -235,7 +235,6 @@ console.log("DB:", process.env.DB_HOST);
 
 const PORT = process.env.PORT || 8100;
 http.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
   io.on('connection', socket => {
     console.log('🟢 Usuario conectado a comentarios');
 
