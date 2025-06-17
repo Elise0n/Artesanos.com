@@ -1,10 +1,8 @@
-const express = require('express');
-const router = express.Router();
-const Album = require('../models/albumModel');
-const { verIndice, verAlbum } = require('../controllers/albumesController');
-const { crearAlbum, formularioCrearAlbum, mostrarAlbum } = require('../controllers/albumesController');
-const { mostrarFeedAlbumes } = require('../controllers/albumesController');
+const router = require('express').Router();
+const { verIndice, mostrarAlbum } = require('../controllers/albumesController');
+const { crearAlbum, formularioCrearAlbum, mostrarFeedAlbumes } = require('../controllers/albumesController');
 const { formularioEditarAlbum, editarAlbum, eliminarAlbum } = require('../controllers/albumesController');
+const pool = require('../config/db');
 
 // ============================
 // Mostrar albumes del usuario logueado
@@ -25,16 +23,17 @@ router.post('/eliminar/:id', eliminarAlbum);
 // ============================
 // Formulario para crear album
 // ============================
-router.get('/crear', (req, res) => {
-  if (!req.session.usuario) return res.redirect('/login');
-  res.render('crearAlbum');
-});
 
+// Formulario y acción de creación
 router.get('/crear', formularioCrearAlbum);
-router.get('/:id', mostrarAlbum);
+router.post('/crear', crearAlbum);
 
 // ============================
 // Guardar nuevo album en BD
+// ============================
+
+// ============================
+// Formulario y acción de creación
 // ============================
 router.post('/crear', (req, res) => {
   if (!req.session.usuario) return res.redirect('/login');
@@ -56,19 +55,19 @@ router.post('/crear', (req, res) => {
 // ============================
 // Feed de albumes visibles
 // ============================
-
+// Feed de álbumes públicos y de amigos
 router.get('/feed', mostrarFeedAlbumes);
+// Ver album por id
+router.get('/:id', mostrarAlbum);
 
-router.get('/:id', verAlbum);
-
-export default router;
+module.exports = router;
 
 // ============================
 // Funciones para editar y eliminar album
 // ============================
 
 // Muestra el formulario con datos actuales del álbum
-export const formularioEditarAlbum = async (req, res) => {
+export async function formularioEditarAlbum(req, res) {
   const { id } = req.params;
   const usuario = req.session.usuario;
 
@@ -80,10 +79,10 @@ export const formularioEditarAlbum = async (req, res) => {
   }
 
   res.render('albumes/editarAlbum', { album });
-};
+}
 
 // Procesa la edición del álbum
-export const editarAlbum = async (req, res) => {
+export async function editarAlbum(req, res) {
   const { id } = req.params;
   const { titulo, descripcion, visibilidad } = req.body;
   const usuario = req.session.usuario;
@@ -101,10 +100,10 @@ export const editarAlbum = async (req, res) => {
   `, [titulo, descripcion, visibilidad, id]);
 
   res.redirect('/perfil');
-};
+}
 
 // Eliminar álbum
-export const eliminarAlbum = async (req, res) => {
+export async function eliminarAlbum(req, res) {
   const { id } = req.params;
   const usuario = req.session.usuario;
 
@@ -118,4 +117,4 @@ export const eliminarAlbum = async (req, res) => {
   await pool.query('DELETE FROM album WHERE id_album = ?', [id]);
 
   res.redirect('/perfil');
-};
+}
