@@ -1,8 +1,22 @@
-
-extends ./partials/layout.pug
+extends ./partials/layout
 
 block content
-  .container
-    h1 Crearalbum
-    .card
-      p Aquí se mostrará la vista de crearalbum.
+  .container.mt-5
+    h2 Crear nuevo álbum
+
+    form(method="POST", action="/albumes/crear")
+      .mb-3
+        label.form-label(for="titulo") Título del álbum
+        input.form-control(type="text", name="titulo", id="titulo", required)
+
+      .mb-3
+        label.form-label(for="descripcion") Descripción
+        textarea.form-control(name="descripcion", id="descripcion", rows="4")
+
+      .mb-3
+        label.form-label(for="visibilidad") ¿Quién puede ver este álbum?
+        select.form-select(name="visibilidad", id="visibilidad", required)
+          option(value="publico") Público (todos)
+          option(value="amigos") Solo amigos
+
+      button.btn.btn-success(type="submit") Crear álbum

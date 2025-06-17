@@ -3,19 +3,19 @@ const pool = require('../config/db');
 const Amistad = {
   // Enviar solicitud
   enviar: (de, para, callback) => {
-    const sql = 'INSERT INTO solicitud_amistad (de_usuario, para_usuario, estado) VALUES (?, ?, "pendiente")';
+    const sql = 'INSERT INTO solicitud_amistad (id_emisor, id_receptor, estado) VALUES (?, ?, "pendiente")';
     pool.query(sql, [de, para], callback);
   },
 
   // Aceptar solicitud
   aceptar: (de, para, callback) => {
-    const sql = 'UPDATE solicitud_amistad SET estado = "aceptada" WHERE de_usuario = ? AND para_usuario = ?';
+    const sql = 'UPDATE solicitud_amistad SET estado = "aceptada" WHERE id_emisor = ? AND id_receptor = ?';
     pool.query(sql, [de, para], callback);
   },
 
   // Rechazar solicitud
   rechazar: (de, para, callback) => {
-    const sql = 'UPDATE solicitud_amistad SET estado = "rechazada" WHERE de_usuario = ? AND para_usuario = ?';
+    const sql = 'UPDATE solicitud_amistad SET estado = "rechazada" WHERE id_emisor = ? AND id_receptor = ?';
     pool.query(sql, [de, para], callback);
   },
 
@@ -24,17 +24,32 @@ const Amistad = {
     const sql = `
       SELECT s.*, u.nombre, u.apellido
       FROM solicitud_amistad s
-      JOIN usuario u ON s.de_usuario = u.id_usuario
-      WHERE s.para_usuario = ? AND s.estado = "pendiente"
+      JOIN usuario u ON s.id_emisor = u.id_usuario
+      WHERE s.id_receptor = ? AND s.estado = "pendiente"
     `;
     pool.query(sql, [usuarioId], callback);
+  },
+
+  // Actualizar estado desde el id_solicitud
+  actualizarEstado: (solicitud_id, nuevoEstado, callback) => {
+    const sql = 'UPDATE solicitud_amistad SET estado = ? WHERE id_solicitud = ?';
+    pool.query(sql, [nuevoEstado, solicitud_id], callback);
+  },
+
+  // Verifica si dos usuarios son amigos
+  sonAmigos: (id1, id2, callback) => {
+    const sql = `
+      SELECT 1 FROM solicitud_amistad
+      WHERE estado = "aceptada" AND (
+        (id_emisor = ? AND id_receptor = ?) OR
+        (id_emisor = ? AND id_receptor = ?)
+      ) LIMIT 1
+    `;
+    pool.query(sql, [id1, id2, id2, id1], (err, results) => {
+      if (err) return callback(err, false);
+      callback(null, results.length > 0);
+    });
   }
 };
-
-// Actualizar estado desde el id_solicitud
-actualizarEstado: (solicitud_id, nuevoEstado, callback) => {
-  const sql = 'UPDATE solicitud_amistad SET estado = ? WHERE id_solicitud = ?';
-  pool.query(sql, [nuevoEstado, solicitud_id], callback);
-}
 
 module.exports = Amistad;

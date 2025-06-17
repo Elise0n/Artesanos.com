@@ -1,0 +1,23 @@
+extends ../partials/layout
+
+block content
+  .container.mt-5
+    h2 Editar álbum
+
+    form(method="POST", action=`/albumes/editar/${album.id_album}`)
+      .mb-3
+        label.form-label(for="titulo") Título del álbum
+        input.form-control(type="text", name="titulo", id="titulo", value=album.titulo, required)
+
+      .mb-3
+        label.form-label(for="descripcion") Descripción
+        textarea.form-control(name="descripcion", id="descripcion", rows="4")= album.descripcion
+
+      .mb-3
+        label.form-label(for="visibilidad") Visibilidad
+        select.form-select(name="visibilidad", id="visibilidad")
+          option(value="publico", selected=album.visibilidad === 'publico') Público
+          option(value="amigos", selected=album.visibilidad === 'amigos') Solo amigos
+
+      button.btn.btn-primary(type="submit") Guardar cambios
+      a.btn.btn-secondary.ms-2(href="/perfil") Cancelar

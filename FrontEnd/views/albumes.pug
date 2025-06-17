@@ -1,8 +1,8 @@
-
-extends ./partials/layout.pug
+extends ./partials/layout
 
 block content
-  .container
-    h1 Albumes
-    .card
-      p Aquí se mostrará la vista de albumes.
+  h1 Álbumes de la Web
+  ul.list-group
+    each i in [1,2,3,4,5,6,7,8]
+      li.list-group-item
+        a(href=`/albumes/${i}`) Álbum #{i}

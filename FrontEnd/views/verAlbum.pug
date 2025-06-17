@@ -1,0 +1,59 @@
+extends ../partials/layout
+
+block content
+  .container.mt-4
+    h2= album.titulo
+    p.text-muted Publicado el #{new Date(album.fecha_creacion).toLocaleDateString('es-AR')}
+    p= album.descripcion
+
+    hr
+
+    h4 Comentarios
+    ul#listaComentarios.list-group.mb-3
+      each comentario in comentarios
+        li.list-group-item
+          strong= comentario.nombre
+          | : #{comentario.contenido}
+          br
+          small.text-muted= new Date(comentario.fecha).toLocaleString('es-AR')
+
+    if usuario
+      form#formComentario
+        input(type="hidden", id="idAlbum", value=album.id_album)
+        .mb-3
+          textarea.form-control(name="contenido" id="contenido" rows="3" placeholder="Escribí un comentario...") 
+        button.btn.btn-primary(type="submit") Enviar
+
+    else
+      p.text-muted Necesitás iniciar sesión para comentar.
+
+  script(src="/socket.io/socket.io.js")
+  script.
+    const socket = io();
+    const idAlbum = document.getElementById('idAlbum')?.value;
+
+    if (idAlbum) {
+      const form = document.getElementById('formComentario');
+      const lista = document.getElementById('listaComentarios');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const contenido = document.getElementById('contenido').value;
+        if (!contenido.trim()) return;
+
+        socket.emit('nuevoComentario', {
+          id_album: idAlbum,
+          contenido: contenido,
+          id_usuario: #{usuario?.id_usuario || 'null'}
+        });
+
+        document.getElementById('contenido').value = '';
+      });
+
+      socket.on(`comentarioAlbum:${idAlbum}`, (data) => {
+        const nuevo = document.createElement('li');
+        nuevo.classList.add('list-group-item');
+        nuevo.innerHTML = `<strong>${data.nombre}</strong>: ${data.contenido}<br><small class="text-muted">${new Date(data.fecha).toLocaleString('es-AR')}</small>`;
+        lista.appendChild(nuevo);
+      });
+    }

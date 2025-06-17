@@ -2,7 +2,7 @@
 // Controladores de usuarios
 // ============================
 const Usuario = require('../models/usuarioModel').default;
-
+const pool = require('../config/db');
 // Obtener todos los usuarios
 // Este controlador llama al modelo y responde con los usuarios desde la base de datos.
 exports.listar = (req, res) => {

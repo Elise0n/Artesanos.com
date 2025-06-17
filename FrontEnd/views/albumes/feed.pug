@@ -1,0 +1,16 @@
+extends ../partials/layout
+
+block content
+  .container.mt-4
+    h2 Álbumes de la comunidad
+
+    if albumes.length
+      each album in albumes
+        .card.mb-3
+          .card-body
+            h5.card-title= album.titulo
+            p.card-text.text-muted Por #{album.nombre}
+            p.card-text= album.descripcion
+            a.btn.btn-outline-primary(href=`/albumes/${album.id_album}`) Ver álbum
+    else
+      p.text-muted No hay álbumes para mostrar aún.

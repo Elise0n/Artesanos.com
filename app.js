@@ -11,6 +11,7 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 require('dotenv').config();
 
+
 // Rutas y modelos
 const pool = require('./BackEnd/config/db');
 const Usuario = require('./BackEnd/models/usuarioModel');
