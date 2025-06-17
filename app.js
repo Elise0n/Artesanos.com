@@ -203,19 +203,37 @@ app.post('/login', async (req, res) => {
 
 app.post('/registro', async (req, res) => {
   const datos = req.body;
-  pool.query('SELECT * FROM usuario WHERE email = ?', [datos.email], async (err, resultados) => {
+
+  try {
+    const [resultados] = await pool.query('SELECT * FROM usuario WHERE email = ?', [datos.email]);
+
     if (resultados.length > 0) {
-      return res.render('registro', { error: 'El correo ya está registrado', exito: null });
+      return res.render('registro', {
+        error: 'El correo ya está registrado',
+        exito: null
+      });
     }
 
     const salt = await bcrypt.genSalt(10);
     datos.contraseña = await bcrypt.hash(datos.contraseña, salt);
-    Usuario.crear(datos, (err) => {
-      if (err) return res.render('registro', { error: 'Error al registrar usuario', exito: null });
-      res.render('login', { error: null, exito: '¡Registro exitoso!' });
+
+    // Usuario.crear debe devolver una promesa o usar callback
+    await Usuario.crear(datos);
+
+    return res.render('login', {
+      error: null,
+      exito: '¡Registro exitoso!'
     });
-  });
+
+  } catch (err) {
+    console.error('Error en /registro:', err);
+    return res.render('registro', {
+      error: 'Error interno del servidor',
+      exito: null
+    });
+  }
 });
+
 
 app.get('/logout', (req, res) => req.session.destroy(() => res.redirect('/')));
 app.post('/cerrar-sesion', (req, res) => req.session.destroy(() => res.redirect('/')));
