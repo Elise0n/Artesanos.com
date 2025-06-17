@@ -38,7 +38,14 @@ const mostrarAlbum = async (req, res) => {
 
   const idUsuarioLogueado = usuarioLogueado?.id ?? null;
 
+console.log('⏳ Verificando amistad...');
+console.log('Usuario logueado:', usuarioLogueado);
+console.log('ID álbum:', id);
+
+
   Amistad.sonAmigos(idUsuarioLogueado, album.id_usuario, async (err, esAmigo) => {
+    console.log('Resultado verificación:', err, esAmigo);
+
     if (err) return res.status(500).send('Error al verificar amistad');
 
     const permitido =
