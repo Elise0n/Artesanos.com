@@ -1,84 +1,85 @@
-export const verIndice = (req, res) => {
-    res.render('albumes');
-  };
-  
-export const verAlbum = (req, res) => {
-    const id = req.params.id;
-    res.render(`albumes/album${id}`);
-  };
+const pool = require('../config/db');
+const Amistad = require('../models/amistadModel');
 
-  // Muestra formulario para crear álbum
-  export const formularioCrearAlbum = (req, res) => {
-    if (!req.session.usuario) return res.redirect('/login');
-    res.render('crearAlbum');
-  };
-  
-  // Guarda nuevo álbum en la BD
-export const crearAlbum = async (req, res) => {
-    const { titulo, descripcion, visibilidad } = req.body;
-    const id_usuario = req.session.usuario.id_usuario;
-  
-    await pool.query(`
-      INSERT INTO album (id_usuario, titulo, descripcion, visibilidad)
-      VALUES (?, ?, ?, ?)
-    `, [id_usuario, titulo, descripcion, visibilidad]);
-  
-    res.redirect('/perfil'); // o a la vista del nuevo álbum
-  };
-  
-  // Muestra un álbum específico
-export const mostrarAlbum = async (req, res) => {
-    const { id } = req.params;
-    const usuarioLogueado = req.session.usuario;
-  
-    const [album] = await pool.query('SELECT * FROM album WHERE id_album = ?', [id]);
-  
-    // Suponiendo que tengas una función para validar amistad
-    const esAmigo = await verificarAmistad(album.id_usuario, usuarioLogueado?.id_usuario);
-    const permitido = (album.visibilidad === 'publico') || esAmigo || (usuarioLogueado?.id_usuario === album.id_usuario);
-  
+const verIndice = (req, res) => {
+  res.render('albumes');
+};
+
+const verAlbum = (req, res) => {
+  const id = req.params.id;
+  res.render(`albumes/album${id}`);
+};
+
+const formularioCrearAlbum = (req, res) => {
+  if (!req.session.usuario) return res.redirect('/login');
+  res.render('crearAlbum');
+};
+
+const crearAlbum = async (req, res) => {
+  const { titulo, descripcion, visibilidad } = req.body;
+  const id_usuario = req.session.usuario.id;
+
+  await pool.query(`
+    INSERT INTO album (id_usuario, titulo, descripcion, visibilidad)
+    VALUES (?, ?, ?, ?)
+  `, [id_usuario, titulo, descripcion, visibilidad]);
+
+  res.redirect('/perfil');
+};
+
+const mostrarAlbum = async (req, res) => {
+  const { id } = req.params;
+  const usuarioLogueado = req.session.usuario;
+
+  const [albumResult] = await pool.query('SELECT * FROM album WHERE id_album = ?', [id]);
+  const album = albumResult[0];
+
+  if (!album) return res.status(404).render('error404');
+
+  Amistad.sonAmigos(usuarioLogueado.id, album.id_usuario, async (err, esAmigo) => {
+    if (err) return res.status(500).send('Error al verificar amistad');
+
+    const permitido =
+      album.visibilidad === 'publico' ||
+      esAmigo ||
+      usuarioLogueado?.id === album.id_usuario;
+
     if (!permitido) return res.status(403).render('error403');
-  
-    const comentarios = await pool.query(`
+
+    const [comentarios] = await pool.query(`
       SELECT c.*, u.nombre FROM comentario_album c
       JOIN usuario u ON u.id_usuario = c.id_usuario
       WHERE c.id_album = ?
       ORDER BY c.fecha ASC
     `, [id]);
-  
-    res.render('albumes/verAlbum', { album, comentarios, usuario: req.session.usuario });
-  };
 
-  const Amistad = require('../models/amistadModel');
-  const pool  = require('../config/db');
+    res.render('albumes/verAlbum', { album, comentarios, usuario: usuarioLogueado });
+  });
+};
 
-  export async function mostrarFeedAlbumes(req, res) {
+const mostrarFeedAlbumes = async (req, res) => {
   const usuario = req.session.usuario;
-
   let query = `
-      SELECT a.*, u.nombre
-      FROM album a
-      JOIN usuario u ON u.id_usuario = a.id_usuario
-      WHERE a.visibilidad = 'publico'
-    `;
-
+    SELECT a.*, u.nombre
+    FROM album a
+    JOIN usuario u ON u.id_usuario = a.id_usuario
+    WHERE a.visibilidad = 'publico'
+  `;
   const valores = [];
 
   if (usuario) {
-    // también quiero mis álbumes
     query += ` OR a.id_usuario = ?`;
-    valores.push(usuario.id_usuario);
+    valores.push(usuario.id);
 
-    // y los de amigos (visibilidad = 'amigos')
     const [amistades] = await pool.query(`
-        SELECT id_emisor, id_receptor FROM solicitud_amistad
-        WHERE estado = 'aceptada' AND (id_emisor = ? OR id_receptor = ?)
-      `, [usuario.id_usuario, usuario.id_usuario]);
+      SELECT id_emisor, id_receptor FROM solicitud_amistad
+      WHERE estado = 'aceptada' AND (id_emisor = ? OR id_receptor = ?)
+    `, [usuario.id, usuario.id]);
 
     const idsAmigos = new Set();
     amistades.forEach(row => {
-      if (row.id_emisor !== usuario.id_usuario) idsAmigos.add(row.id_emisor);
-      if (row.id_receptor !== usuario.id_usuario) idsAmigos.add(row.id_receptor);
+      if (row.id_emisor !== usuario.id) idsAmigos.add(row.id_emisor);
+      if (row.id_receptor !== usuario.id) idsAmigos.add(row.id_receptor);
     });
 
     if (idsAmigos.size > 0) {
@@ -92,59 +93,66 @@ export const mostrarAlbum = async (req, res) => {
 
   const [albumes] = await pool.query(query, valores);
   res.render('albumes/feed', { albumes, usuario });
-}
+};
 
-Amistad.sonAmigos(usuarioLogueado.id_usuario, album.id_usuario, (err, esAmigo) => {
-  if (err) return res.status(500).send('Error al verificar amistad');
+const formularioEditarAlbum = async (req, res) => {
+  const { id } = req.params;
+  const usuario = req.session.usuario;
 
-  const permitido = album.visibilidad === 'publico' || esAmigo || (usuarioLogueado.id_usuario === album.id_usuario);
+  const [result] = await pool.query('SELECT * FROM album WHERE id_album = ?', [id]);
+  const album = result[0];
 
-  if (!permitido) return res.status(403).render('error403');
+  if (!album || album.id_usuario !== usuario.id) {
+    return res.status(403).render('error403');
+  }
 
-  // continuar mostrando el álbum...
-});
+  res.render('albumes/editarAlbum', { album });
+};
 
-export async function formularioEditarAlbum(req, res) {
-    const { id } = req.params;
-    const usuario = req.session.usuario;
+const editarAlbum = async (req, res) => {
+  const { id } = req.params;
+  const { titulo, descripcion, visibilidad } = req.body;
+  const usuario = req.session.usuario;
 
-    const [album] = await pool.query('SELECT * FROM album WHERE id_album = ?', [id]);
+  const [result] = await pool.query('SELECT * FROM album WHERE id_album = ?', [id]);
+  const album = result[0];
 
-    if (!album || album.id_usuario !== usuario.id_usuario) {
-        return res.status(403).render('error403');
-    }
+  if (!album || album.id_usuario !== usuario.id) {
+    return res.status(403).render('error403');
+  }
 
-    res.render('albumes/editarAlbum', { album });
-}
+  await pool.query(
+    'UPDATE album SET titulo = ?, descripcion = ?, visibilidad = ? WHERE id_album = ?',
+    [titulo, descripcion, visibilidad, id]
+  );
 
-export async function editarAlbum(req, res) {
-    const { id } = req.params;
-    const { titulo, descripcion, visibilidad } = req.body;
-    const usuario = req.session.usuario;
+  res.redirect('/perfil');
+};
 
-    const [album] = await pool.query('SELECT * FROM album WHERE id_album = ?', [id]);
+const eliminarAlbum = async (req, res) => {
+  const { id } = req.params;
+  const usuario = req.session.usuario;
 
-    if (!album || album.id_usuario !== usuario.id_usuario) {
-        return res.status(403).render('error403');
-    }
+  const [result] = await pool.query('SELECT * FROM album WHERE id_album = ?', [id]);
+  const album = result[0];
 
-    await pool.query('UPDATE album SET titulo = ?, descripcion = ?, visibilidad = ? WHERE id_album = ?', [titulo, descripcion, visibilidad, id]);
+  if (!album || album.id_usuario !== usuario.id) {
+    return res.status(403).render('error403');
+  }
 
-    res.redirect('/perfil');
-}
+  await pool.query('DELETE FROM album WHERE id_album = ?', [id]);
 
-export async function eliminarAlbum(req, res) {
-    const { id } = req.params;
-    const usuario = req.session.usuario;
+  res.redirect('/perfil');
+};
 
-    const [album] = await pool.query('SELECT * FROM album WHERE id_album = ?', [id]);
-
-    if (!album || album.id_usuario !== usuario.id_usuario) {
-        return res.status(403).render('error403');
-    }
-
-    await pool.query('DELETE FROM album WHERE id_album = ?', [id]);
-
-    res.redirect('/perfil');
-}
-
+module.exports = {
+  verIndice,
+  verAlbum,
+  formularioCrearAlbum,
+  crearAlbum,
+  mostrarAlbum,
+  mostrarFeedAlbumes,
+  formularioEditarAlbum,
+  editarAlbum,
+  eliminarAlbum
+};
