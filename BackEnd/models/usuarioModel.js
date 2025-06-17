@@ -2,17 +2,17 @@ const pool = require('../config/db');
 
 //Modelo con funciones CRUD para usuarios
 const Usuario = {
-  obtenerTodos(callback) {
-    const sql = 'SELECT * FROM usuario';  
-    pool.query(sql, callback);
+  obtenerTodos: async () => {
+    const [usuarios] = await pool.query('SELECT * FROM usuario');  
+    return usuarios;
   },
 
-  obtenerPorId(id, callback) {
-    const sql = 'SELECT * FROM usuario WHERE id_usuario = ?';
-    pool.query(sql, [id], callback);
+  obtenerPorId: async (id) => {
+    const [usuarios] = await pool.query('SELECT * FROM usuario WHERE id_usuario = ?', [id]);
+    return usuarios;
   },
 
-  crear(data, callback) {
+  crear: async (data) => {
     const sql = `
       INSERT INTO usuario (nombre, apellido, email, contraseña, intereses, antecedentes, imagen_perfil)
       VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -26,10 +26,11 @@ const Usuario = {
       data.antecedentes || null,
       data.imagen_perfil || null
     ];
-    pool.query(sql, valores, callback);
+    const [usuarios] = await pool.query(sql, valores);
+    return usuarios;
   },
 
-  actualizar(id, data, callback) {
+  actualizar: async (id, data) => {
     const sql = `
       UPDATE usuario SET nombre=?, apellido=?, email=?, contraseña=?, intereses=?, antecedentes=?, imagen_perfil=?
       WHERE id_usuario = ?
@@ -44,12 +45,14 @@ const Usuario = {
       data.imagen_perfil,
       id
     ];
-    pool.query(sql, valores, callback);
+    const [usuarios] = await pool.query(sql, valores);
+    return usuarios;
   },
 
-  eliminar(id, callback) {
+  eliminar: async (id) => {
     const sql = 'DELETE FROM usuario WHERE id_usuario = ?';
-    pool.query(sql, [id], callback);
+    const [usuarios] = await pool.query(sql, [id]);
+    return usuarios;
   }
 };
 

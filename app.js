@@ -73,11 +73,13 @@ app.use('/api/usuario', usuarioRoutes);
 // ==========================
 app.get('/', (req, res) => res.render('inicio'));
 
-app.get('/usuarios', (req, res) => {
-  Usuario.obtenerTodos((err, usuarios) => {
-    if (err) return res.status(500).send('Error al obtener usuarios');
+app.get('/usuarios', async (req, res) => {
+  try {
+    const usuarios = await Usuario.obtenerTodos();
     res.render('usuarios', { usuarios });
-  });
+  } catch (err) {
+    res.status(500).send('Error al obtener usuarios');
+  }
 });
 
 app.get('/registro', (req, res) => res.render('registro', { error: null, exito: null }));
