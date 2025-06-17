@@ -36,13 +36,15 @@ const mostrarAlbum = async (req, res) => {
 
   if (!album) return res.status(404).render('error404');
 
-  Amistad.sonAmigos(usuarioLogueado.id, album.id_usuario, async (err, esAmigo) => {
+  const idUsuarioLogueado = usuarioLogueado?.id ?? null;
+
+  Amistad.sonAmigos(idUsuarioLogueado, album.id_usuario, async (err, esAmigo) => {
     if (err) return res.status(500).send('Error al verificar amistad');
 
     const permitido =
       album.visibilidad === 'publico' ||
       esAmigo ||
-      usuarioLogueado?.id === album.id_usuario;
+      idUsuarioLogueado === album.id_usuario;
 
     if (!permitido) return res.status(403).render('error403');
 
@@ -53,7 +55,11 @@ const mostrarAlbum = async (req, res) => {
       ORDER BY c.fecha ASC
     `, [id]);
 
-    res.render('albumes/verAlbum', { album, comentarios, usuario: usuarioLogueado });
+    res.render('albumes/verAlbum', {
+      album,
+      comentarios,
+      usuario: usuarioLogueado
+    });
   });
 };
 
