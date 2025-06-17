@@ -104,3 +104,47 @@ Amistad.sonAmigos(usuarioLogueado.id_usuario, album.id_usuario, (err, esAmigo) =
   // continuar mostrando el álbum...
 });
 
+export async function formularioEditarAlbum(req, res) {
+    const { id } = req.params;
+    const usuario = req.session.usuario;
+
+    const [album] = await pool.query('SELECT * FROM album WHERE id_album = ?', [id]);
+
+    if (!album || album.id_usuario !== usuario.id_usuario) {
+        return res.status(403).render('error403');
+    }
+
+    res.render('albumes/editarAlbum', { album });
+}
+
+export async function editarAlbum(req, res) {
+    const { id } = req.params;
+    const { titulo, descripcion, visibilidad } = req.body;
+    const usuario = req.session.usuario;
+
+    const [album] = await pool.query('SELECT * FROM album WHERE id_album = ?', [id]);
+
+    if (!album || album.id_usuario !== usuario.id_usuario) {
+        return res.status(403).render('error403');
+    }
+
+    await pool.query('UPDATE album SET titulo = ?, descripcion = ?, visibilidad = ? WHERE id_album = ?', [titulo, descripcion, visibilidad, id]);
+
+    res.redirect('/perfil');
+}
+
+export async function eliminarAlbum(req, res) {
+    const { id } = req.params;
+    const usuario = req.session.usuario;
+
+    const [album] = await pool.query('SELECT * FROM album WHERE id_album = ?', [id]);
+
+    if (!album || album.id_usuario !== usuario.id_usuario) {
+        return res.status(403).render('error403');
+    }
+
+    await pool.query('DELETE FROM album WHERE id_album = ?', [id]);
+
+    res.redirect('/perfil');
+}
+

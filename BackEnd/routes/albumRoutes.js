@@ -1,120 +1,35 @@
-const router = require('express').Router();
-const { verIndice, mostrarAlbum } = require('../controllers/albumesController');
-const { crearAlbum, formularioCrearAlbum, mostrarFeedAlbumes } = require('../controllers/albumesController');
-const { formularioEditarAlbum, editarAlbum, eliminarAlbum } = require('../controllers/albumesController');
-const pool = require('../config/db');
+const express = require('express');
+const router = express.Router();
+const {
+  verIndice,
+  mostrarAlbum,
+  crearAlbum,
+  formularioCrearAlbum,
+  mostrarFeedAlbumes,
+  formularioEditarAlbum,
+  editarAlbum,
+  eliminarAlbum
+} = require('../controllers/albumesController');
 
-// ============================
-// Mostrar albumes del usuario logueado
-// ============================
-router.get('/', (req, res) => {
-  if (!req.session.usuario) return res.redirect('/login');
+// Feed de álbumes públicos y de amigos (IMPORTANTE: antes que /:id)
+router.get('/feed', mostrarFeedAlbumes);
 
-  verIndice(req, res);
-});
+// Formulario y creación de álbum
+router.get('/crear', formularioCrearAlbum);
+router.post('/crear', crearAlbum);
 
-// ============================
-// Rutas para editar y eliminar album
-// ============================
+// Editar y eliminar álbum
 router.get('/editar/:id', formularioEditarAlbum);
 router.post('/editar/:id', editarAlbum);
 router.post('/eliminar/:id', eliminarAlbum);
 
-// ============================
-// Formulario para crear album
-// ============================
-
-// Formulario y acción de creación
-router.get('/crear', formularioCrearAlbum);
-router.post('/crear', crearAlbum);
-
-// ============================
-// Guardar nuevo album en BD
-// ============================
-
-// ============================
-// Formulario y acción de creación
-// ============================
-router.post('/crear', (req, res) => {
-  if (!req.session.usuario) return res.redirect('/login');
-
-  const data = {
-    titulo: req.body.titulo,
-    usuario_id: req.session.usuario.id
-  };
-
-  crearAlbum(data, (err) => {
-    if (err) {
-      console.error('Error al crear álbum:', err);
-      return res.status(500).send('Error al crear álbum');
-    }
-    res.redirect('/perfil');
-  });
-});
-
-// ============================
-// Feed de albumes visibles
-// ============================
-// Feed de álbumes públicos y de amigos
-router.get('/feed', mostrarFeedAlbumes);
-// Ver album por id
+// Ver álbum por ID
 router.get('/:id', mostrarAlbum);
 
+// Página raíz para ver tus álbumes
+router.get('/', (req, res) => {
+  if (!req.session.usuario) return res.redirect('/login');
+  verIndice(req, res);
+});
+
 module.exports = router;
-
-// ============================
-// Funciones para editar y eliminar album
-// ============================
-
-// Muestra el formulario con datos actuales del álbum
-export async function formularioEditarAlbum(req, res) {
-  const { id } = req.params;
-  const usuario = req.session.usuario;
-
-  const [result] = await pool.query('SELECT * FROM album WHERE id_album = ?', [id]);
-  const album = result[0];
-
-  if (!album || album.id_usuario !== usuario.id_usuario) {
-    return res.status(403).render('error403');
-  }
-
-  res.render('albumes/editarAlbum', { album });
-}
-
-// Procesa la edición del álbum
-export async function editarAlbum(req, res) {
-  const { id } = req.params;
-  const { titulo, descripcion, visibilidad } = req.body;
-  const usuario = req.session.usuario;
-
-  // Verificar propiedad del álbum
-  const [result] = await pool.query('SELECT * FROM album WHERE id_album = ?', [id]);
-  const album = result[0];
-
-  if (!album || album.id_usuario !== usuario.id_usuario) {
-    return res.status(403).render('error403');
-  }
-
-  await pool.query(`
-    UPDATE album SET titulo = ?, descripcion = ?, visibilidad = ? WHERE id_album = ?
-  `, [titulo, descripcion, visibilidad, id]);
-
-  res.redirect('/perfil');
-}
-
-// Eliminar álbum
-export async function eliminarAlbum(req, res) {
-  const { id } = req.params;
-  const usuario = req.session.usuario;
-
-  const [result] = await pool.query('SELECT * FROM album WHERE id_album = ?', [id]);
-  const album = result[0];
-
-  if (!album || album.id_usuario !== usuario.id_usuario) {
-    return res.status(403).render('error403');
-  }
-
-  await pool.query('DELETE FROM album WHERE id_album = ?', [id]);
-
-  res.redirect('/perfil');
-}
