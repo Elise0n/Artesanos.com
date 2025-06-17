@@ -10,14 +10,15 @@ const Imagen = {
   //Obtener imágenes visibles según si son públicas o compartidas con el usuario
   obtenerPorAlbum: (albumId, usuarioId, callback) => {
     const sql = `
-      SELECT i.*,(SELECT COUNT(*) FROM me_gusta g WHERE g.imagen_id = i.id_imagen
+      SELECT i.*,(SELECT COUNT(*) FROM me_gusta g WHERE g.id_imagen = i.id_imagen
       ) AS totalLikes
       FROM imagen i
-      LEFT JOIN imagen_usuario_compartida c ON i.id_imagen = c.imagen_id AND c.usuario_id = ?
-      WHERE i.album_id = ?
-        AND (i.solo_amigos = 0 OR c.usuario_id IS NOT NULL)
+      LEFT JOIN imagen_usuario_compartida c ON i.id_imagen = c.id_imagen AND c.id_usuario = ?
+    WHERE (i.visibilidad = 'publica' OR i.id_usuario = ? OR EXISTS (
+      SELECT 1 FROM imagen_usuario_compartida c WHERE c.id_imagen = i.id_imagen AND c.id_usuario = ?
+    ))
     `;
-    pool.query(sql, [usuarioId, albumId], callback);
+    pool.query(sql, [usuarioId, albumId, usuarioId], callback);
   }
 };  
 

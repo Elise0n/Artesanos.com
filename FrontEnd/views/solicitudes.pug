@@ -1,8 +1,15 @@
-
 extends ./partials/layout.pug
 
 block content
-  .container
-    h1 Solicitudes
-    .card
-      p Aquí se mostrará la vista de solicitudes.
+  h1 Solicitudes de amistad
+
+  if solicitudes.length
+    each solicitud in solicitudes
+      .card.mb-3.p-3
+        p #{solicitud.nombre} #{solicitud.apellido} te envió una solicitud.
+        form(method="POST", action="/amistades/responder")
+          input(type="hidden", name="solicitud_id", value=solicitud.id_solicitud)
+          button.btn.btn-success(name="accion", value="aceptada") Aceptar
+          button.btn.btn-danger(name="accion", value="rechazada") Rechazar
+  else
+    p No tenés solicitudes pendientes.

@@ -1,8 +1,75 @@
-
 extends ./partials/layout.pug
 
 block content
   .container
-    h1 Imagenes
-    .card
-      p Aquí se mostrará la vista de imagenes.
+    h1 Imágenes del Álbum
+
+    each img in imagenes
+      .card.mb-4
+        img.card-img-top(src=img.ruta, alt=img.titulo, style="max-height:300px;object-fit:cover")
+        .card-body
+        if img.compartidos && img.compartidos.length
+          p.mb-1
+            strong Compartida con:
+            each u in img.compartidos
+              span.badge.bg-secondary.mx-1= `${u.nombre} ${u.apellido}`
+
+          h5.card-title= img.titulo
+          if img.solo_amigos
+            p.text-muted.mb-1
+              i.fas.fa-users.me-1
+              | Compartida con amigos
+          else
+            p.text-muted.mb-1
+              i.fas.fa-globe.me-1
+              | Imagen pública
+
+
+          if img.etiquetas.length
+            p.mb-1
+              strong Etiquetas:
+              each e in img.etiquetas
+                span.badge.bg-info.text-dark.mx-1= e.nombre
+
+          h6.mt-3 Comentarios
+          ul#comentarios-#{img.id_imagen}
+            each com in img.comentarios
+              li #{com.nombre}: #{com.contenido}
+
+          form.form-comentario(data-usuario=usuario.nombre method='POST' action='/imagenes/comentar/like')
+            input(type='hidden', name='imagen_id', value=img.id_imagen)
+            .input-group.mt-2
+              input.form-control(type='text', name='contenido', placeholder='Escribe un comentario...')
+              button.btn.btn-primary(type='submit') Enviar
+
+  // Script para comentarios en tiempo real
+  script(src="/socket.io/socket.io.js")
+  script.
+    const socket = io();
+
+    document.querySelectorAll('.form-comentario').forEach(form => {
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const input = form.querySelector('input[name="contenido"]');
+        const imagenId = form.querySelector('input[name="imagen_id"]').value;
+        const nombreUsuario = form.dataset.usuario;
+
+        const comentario = {
+          imagen_id: imagenId,
+          contenido: input.value,
+          nombre: nombreUsuario
+        };
+
+        socket.emit('nuevo_comentario', comentario);
+        input.value = '';
+      });
+    });
+
+    socket.on('comentario_recibido', ({ imagen_id, contenido, nombre }) => {
+      const lista = document.querySelector(`#comentarios-${imagen_id}`);
+      if (lista) {
+        const nuevo = document.createElement('li');
+        nuevo.innerText = `${nombre}: ${contenido}`;
+        lista.appendChild(nuevo);
+      }
+    });

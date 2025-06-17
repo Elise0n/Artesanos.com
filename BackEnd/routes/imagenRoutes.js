@@ -15,6 +15,7 @@ const upload = multer({ storage });
 
 //Mostrar imágenes por álbum con etiquetas y comentarios
 router.get('/:albumId', (req, res) => {
+  if (!req.session.usuario) return res.redirect('/iniciar-sesion');
   Imagen.obtenerPorAlbum(req.params.albumId, req.session.usuario?.id, async (err, imagenes) => {
     if (err) return res.status(500).send('Error al obtener imágenes');
 
@@ -26,14 +27,25 @@ router.get('/:albumId', (req, res) => {
           const sqlComentarios = `
             SELECT c.contenido, u.nombre
             FROM comentario c
-            JOIN usuario u ON c.usuario_id = u.id_usuario
-            WHERE c.imagen_id = ?
+            JOIN usuario u ON c.id_usuario = u.id_usuario
+            WHERE c.id_imagen = ?
           `;
           pool.query(sqlComentarios, [img.id_imagen], (errCom, comentarios) => {
             if (errCom) comentarios = [];
             img.etiquetas = etiquetas;
             img.comentarios = comentarios;
-            resolve(img);
+            // Obtener usuarios con los que fue compartida
+            const sqlCompartidos = `
+            SELECT u.id_usuario, u.nombre, u.apellido
+            FROM imagen_usuario_compartida iuc
+            JOIN usuario u ON iuc.id_usuario = u.id_usuario
+            WHERE iuc.id_imagen = ?
+            `;
+            pool.query(sqlCompartidos, [img.id_imagen], (errCompartidos, compartidos) => {
+              if (errCompartidos) compartidos = [];
+              img.compartidos = compartidos;
+              resolve(img);
+            });
           });
         });
       });
@@ -55,19 +67,19 @@ router.get('/:albumId', (req, res) => {
 
 //Subir imagen con etiquetas y compartir a amigos
 router.post('/subir', upload.single('imagen'), async (req, res) => {
-  const { titulo, etiquetas, album_id, solo_amigos } = req.body;
+  const { titulo, etiquetas, id_album, solo_amigos } = req.body;
   const compartidos = req.body.compartidos || [];
-  const ruta = '/uploads/' + req.file.filename;
+  const ruta_archivo = '/uploads/' + req.file.filename;
 
   const datos = {
     titulo,
-    ruta,
-    album_id,
+    ruta_archivo,
+    id_album,
     solo_amigos: solo_amigos ? 1 : 0
   };
 
-  pool.query('INSERT INTO imagen (titulo, ruta, album_id, solo_amigos) VALUES (?, ?, ?, ?)',
-    [datos.titulo, datos.ruta, datos.album_id, datos.solo_amigos],
+  pool.query('INSERT INTO imagen (titulo, ruta, id_album, solo_amigos) VALUES (?, ?, ?, ?)',
+    [datos.titulo, datos.ruta, datos.id_album, datos.solo_amigos],
     async (err, resultado) => {
       if (err) {
         console.error('Error al guardar imagen:', err);
@@ -90,30 +102,30 @@ router.post('/subir', upload.single('imagen'), async (req, res) => {
 
       //Compartir con amigos si corresponde
       if (solo_amigos && Array.isArray(compartidos)) {
-        const sqlCompartir = 'INSERT INTO imagen_usuario_compartida (imagen_id, usuario_id) VALUES ?';
+        const sqlCompartir = 'INSERT INTO imagen_usuario_compartida (id_imagen, id_usuario) VALUES ?';
         const valores = compartidos.map(id => [idImagen, id]);
 
         pool.query(sqlCompartir, [valores], (err) => {
           if (err) console.error('Error al compartir imagen:', err);
-          res.redirect(`/albumes/${album_id}`);
+          res.redirect(`/albumes/${id_album}`);
         });
       } else {
-        res.redirect(`/albumes/${album_id}`);
+        res.redirect(`/albumes/${id_album}`);
       }
     });
 });
 
 //Comentar imagen
 router.post('/comentar/like', (req, res) => {
-  const { imagen_id, contenido } = req.body;
-  const usuario_id = req.session.usuario?.id;
+  const { id_imagen, contenido } = req.body;
+  const id_usuario = req.session.usuario?.id;
 
-  if (!usuario_id) return res.status(401).send('Debes iniciar sesión');
+  if (!id_usuario) return res.status(401).send('Debes iniciar sesión');
 
   if (contenido) {
     //Si hay contenido, es comentario
-    const sql = 'INSERT INTO comentario (contenido, imagen_id, usuario_id) VALUES (?, ?, ?)';
-    pool.query(sql, [contenido, imagen_id, usuario_id], (err) => {
+    const sql = 'INSERT INTO comentario (contenido, id_imagen, id_usuario) VALUES (?, ?, ?)';
+    pool.query(sql, [contenido, id_imagen, id_usuario], (err) => {
       if (err) {
         console.error('Error al comentar:', err);
         return res.status(500).send('Error al guardar comentario');
@@ -122,8 +134,8 @@ router.post('/comentar/like', (req, res) => {
     });
   } else {
     //Si no hay contenido, es like
-    const sql = 'INSERT IGNORE INTO me_gusta (imagen_id, usuario_id) VALUES (?, ?)';
-    pool.query(sql, [imagen_id, usuario_id], (err) => {
+    const sql = 'INSERT IGNORE INTO me_gusta (id_imagen, id_usuario) VALUES (?, ?)';
+    pool.query(sql, [id_imagen, id_usuario], (err) => {
       if (err) {
         console.error('Error al dar like:', err);
         return res.status(500).send('Error al dar like');
@@ -138,8 +150,8 @@ router.get('/:imagenId/likes', (req, res) => {
   const sql = `
     SELECT u.id_usuario, u.nombre, u.apellido
     FROM me_gusta mg
-    JOIN usuario u ON mg.usuario_id = u.id_usuario
-    WHERE mg.imagen_id = ?
+    JOIN usuario u ON mg.id_usuario = u.id_usuario
+    WHERE mg.id_imagen = ?
   `;
   pool.query(sql, [req.params.imagenId], (err, resultados) => {
     if (err) {

@@ -1,8 +1,21 @@
-
 extends ./partials/layout.pug
 
 block content
-  .container
-    h1 Subirimagen
-    .card
-      p Aquí se mostrará la vista de subirimagen.
+  h1 Subir Imagen
+
+  form(method="POST", action="/imagenes/subir", enctype="multipart/form-data")
+    .mb-3
+      label.form-label(for="titulo") Título
+      input.form-control(type="text", name="titulo", required)
+
+    .mb-3
+      label.form-label(for="archivo") Seleccionar imagen
+      input.form-control(type="file", name="archivo", accept="image/*", required)
+
+    .mb-3
+      label.form-label(for="visibilidad") Visibilidad
+      select.form-select(name="visibilidad", required)
+        option(value="publica") Pública
+        option(value="amigos") Solo amigos
+
+    button.btn.btn-primary.mt-3(type="submit") Subir

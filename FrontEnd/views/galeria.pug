@@ -1,0 +1,16 @@
+extends ./partials/layout.pug
+
+block content
+  h1 Galería pública
+
+  if imagenes.length
+    .row
+      each img in imagenes
+        .col-md-4.mb-4
+          .card
+            img.card-img-top(src=img.ruta, alt=img.titulo)
+            .card-body
+              h5.card-title= img.titulo
+              p.card-text Subido por #{img.nombre} #{img.apellido}
+  else
+    p No hay imágenes públicas aún.

@@ -1,0 +1,28 @@
+extends ./partials/layout.pug
+
+block content
+  .container
+    h1 Editar Perfil
+
+    form(method="POST", action="/editar-perfil", enctype="multipart/form-data")
+      .mb-3
+        label.form-label(for="nombre") Nombre
+        input.form-control(type="text", name="nombre", value=usuario.nombre, required)
+
+      .mb-3
+        label.form-label(for="apellido") Apellido
+        input.form-control(type="text", name="apellido", value=usuario.apellido, required)
+
+      .mb-3
+        label.form-label(for="intereses") Intereses
+        textarea.form-control(name="intereses")= usuario.intereses
+
+      .mb-3
+        label.form-label(for="antecedentes") Antecedentes
+        textarea.form-control(name="antecedentes")= usuario.antecedentes
+
+      .mb-3
+        label.form-label(for="imagen_perfil") Foto de perfil
+        input.form-control(type="file", name="imagen_perfil")
+
+      button.btn.btn-primary(type="submit") Guardar cambios

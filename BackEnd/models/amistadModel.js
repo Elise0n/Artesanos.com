@@ -31,4 +31,10 @@ const Amistad = {
   }
 };
 
+// Actualizar estado desde el id_solicitud
+actualizarEstado: (solicitud_id, nuevoEstado, callback) => {
+  const sql = 'UPDATE solicitud_amistad SET estado = ? WHERE id_solicitud = ?';
+  pool.query(sql, [nuevoEstado, solicitud_id], callback);
+}
+
 module.exports = Amistad;
